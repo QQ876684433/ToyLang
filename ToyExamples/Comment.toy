@@ -1,0 +1,12 @@
+/**
+ * define a class : Comment
+ */
+Comment {
+
+    // start method, similar to main method in Java
+    start(/* no args */) {
+        print "this is a test for comment grammar"
+        // print "this line won't show"
+    }
+
+}
