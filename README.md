@@ -4,7 +4,14 @@ Toy (another JVM based language)
 Toy is a simple programming language running on the jvm, which is envolved from [Enkel](https://github.com/JakubDziworski/Enkel-JVM-language)
 
 
+
+## Dependency
+
+- Toy(v0.0.1) relies on JRE 1.8
+- Toy grammar definition and code generation relies on ANTLR4
+
 ## Build & Run
+
 - Generate parser code from ANTLR
   `./gradlew :antlr:generateGrammarSource `
   
@@ -22,13 +29,13 @@ Toy is a simple programming language running on the jvm, which is envolved from 
 ## Example
 
 - Input(`Fields.toy`)
- ```
+ ```java
 Fields {
- int field
- start {
-    field = 5
-    print field
- }
+	int field
+	start() {
+		field = 5
+		print field
+	}
 }
  ```
 
