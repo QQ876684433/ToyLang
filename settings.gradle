@@ -1,0 +1,4 @@
+rootProject.name = 'toy'
+
+include "antlr"
+include "compiler"

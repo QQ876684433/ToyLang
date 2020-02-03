@@ -1,0 +1,10 @@
+TestJava {
+    start() {
+        var str = "Hello world"
+        var sub = str.substring(1, 2)
+        var index = str.indexOf(" ")
+        print str
+        print sub
+        print str.substring(0, index)
+    }
+}
