@@ -47,8 +47,16 @@ public class Compiler {
     private static void saveBytecodeToClassFile(CompilationUnit compilationUnit) throws IOException {
         BytecodeGenerator bytecodeGenerator = new BytecodeGenerator();
         final byte[] byteCode = bytecodeGenerator.generate(compilationUnit);
+
+        String moduleName = compilationUnit.getModuleName().replace(".", File.separator);
+        String outPath = "build" + File.separator + moduleName + File.separator;
+        File path = new File(outPath);
+        if (!path.exists()) {
+            path.mkdirs();
+        }
+
         String className = compilationUnit.getClassName();
-        String fileName = className + ".class";
+        String fileName = "build/" + className.replace('.', '/') + ".class";
         OutputStream os = new FileOutputStream(fileName);
         IOUtils.write(byteCode, os);
     }

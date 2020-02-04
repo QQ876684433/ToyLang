@@ -1,0 +1,12 @@
+module UsingModule.MyModule
+
+Addition {
+
+    start() {
+        print apply(1, 2)
+    }
+
+    int apply(int x, int y) {
+        x+y
+    }
+}

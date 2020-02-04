@@ -1,13 +1,19 @@
 package xyz.chph.toy.domain.type;
 
 public interface Type {
+    // qualified name
     String getName();
 
     Class<?> getTypeClass();
 
+    // type descriptor
     String getDescriptor();
 
+    // internal name used in class file
     String getInternalName();
+
+    // type name
+    String getClassName();
 
     int getLoadVariableOpcode();
 
@@ -21,5 +27,5 @@ public interface Type {
 
     int getMultiplyOpcode();
 
-    int getDividOpcode();
+    int getDivideOpcode();
 }

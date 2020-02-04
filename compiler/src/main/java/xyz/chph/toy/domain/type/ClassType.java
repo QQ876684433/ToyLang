@@ -64,6 +64,11 @@ public class ClassType implements Type {
     }
 
     @Override
+    public String getClassName() {
+        return name.substring(name.lastIndexOf('.') + 1);
+    }
+
+    @Override
     public int getLoadVariableOpcode() {
         return Opcodes.ALOAD;
     }
@@ -94,7 +99,7 @@ public class ClassType implements Type {
     }
 
     @Override
-    public int getDividOpcode() {
+    public int getDivideOpcode() {
         throw new RuntimeException("Division operation not (yet ;) ) supported for custom objects");
     }
 
@@ -105,6 +110,7 @@ public class ClassType implements Type {
         ClassType classType = (ClassType) o;
         return !(name != null ? !name.equals(classType.name) : classType.name != null);
     }
+
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;

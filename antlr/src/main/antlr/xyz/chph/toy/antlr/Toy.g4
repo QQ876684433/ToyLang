@@ -6,9 +6,22 @@ package xyz.chph.toy.antlr;
 }
 
 //RULES
-compilationUnit : classDeclaration EOF ;
-classDeclaration : className '{' classBody '}' ;
-className : qualifiedName ;
+compilationUnit : moduleDeclaration? usingDeclaration* classDeclaration EOF ;
+
+// package in Java
+moduleDeclaration
+    :   'module' qualifiedName
+    ;
+
+// import in Java
+usingDeclaration
+    :   'using' qualifiedName ('.' '*')?
+    ;
+
+classDeclaration
+    :   className '{' classBody '}'
+    ;
+className : ID ;
 classBody :  field* function* ;
 field : type name;
 function : functionDeclaration block;
@@ -97,7 +110,7 @@ EQUALS : '=' ;
 NUMBER : '-'?[0-9.]+ ;
 BOOL : 'true' | 'false' ;
 STRING : '"'~('\r' | '\n' | '"')*'"' ;
-ID : [a-zA-Z0-9]+ ;
+ID : [a-zA-Z] [a-zA-Z0-9]* ;
 
 COMMENT
     :   '/*' .*? '*/'    -> channel(HIDDEN) // match anything between /* and */

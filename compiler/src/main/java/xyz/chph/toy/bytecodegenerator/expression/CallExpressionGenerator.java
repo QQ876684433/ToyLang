@@ -28,19 +28,19 @@ public class CallExpressionGenerator {
 
     public void generate(ConstructorCall constructorCall) {
         FunctionSignature signature = scope.getConstructorCallSignature(constructorCall.getIdentifier(), constructorCall.getArguments());
-        String ownerDescriptor = new ClassType(signature.getName()).getDescriptor();
-        methodVisitor.visitTypeInsn(Opcodes.NEW, ownerDescriptor);
+        String internalName = new ClassType(signature.getName()).getInternalName();
+        methodVisitor.visitTypeInsn(Opcodes.NEW, internalName);
         methodVisitor.visitInsn(Opcodes.DUP);
         String methodDescriptor = DescriptorFactory.getMethodDescriptor(signature);
         generateArguments(constructorCall,signature);
-        methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, ownerDescriptor, "<init>", methodDescriptor, false);
+        methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, internalName, "<init>", methodDescriptor, false);
     }
 
     public void generate(SuperCall superCall) {
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
         generateArguments(superCall);
-        String ownerDescriptor = scope.getSuperClassInternalName();
-        methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, ownerDescriptor, "<init>", "()V" /*TODO Handle super calls with arguments*/, false);
+        String internalName = scope.getSuperClassInternalName();
+        methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, internalName, "<init>", "()V" /*TODO Handle super calls with arguments*/, false);
     }
 
     public void generate(FunctionCall functionCall) {
@@ -49,8 +49,8 @@ public class CallExpressionGenerator {
         generateArguments(functionCall);
         String functionName = functionCall.getIdentifier();
         String methodDescriptor = DescriptorFactory.getMethodDescriptor(functionCall.getSignature());
-        String ownerDescriptor = functionCall.getOwnerType().getInternalName();
-        methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, ownerDescriptor, functionName, methodDescriptor, false);
+        String internalName = functionCall.getOwnerType().getInternalName();
+        methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, internalName, functionName, methodDescriptor, false);
     }
 
     private void generateArguments(FunctionCall call) {

@@ -1,7 +1,7 @@
 package xyz.chph.toy.domain.type;
 
 public enum BuiltInType implements Type {
-    BOOLEAN("boolean",boolean.class,"Z", TypeSpecificOpcodes.INT),
+    BOOLEAN("boolean", boolean.class, "Z", TypeSpecificOpcodes.INT),
     INT("int", int.class, "I", TypeSpecificOpcodes.INT),
     CHAR("char", char.class, "C", TypeSpecificOpcodes.INT),
     BYTE("byte", byte.class, "B", TypeSpecificOpcodes.INT),
@@ -54,6 +54,11 @@ public enum BuiltInType implements Type {
     }
 
     @Override
+    public String getClassName() {
+        return getName();
+    }
+
+    @Override
     public int getLoadVariableOpcode() {
         return opcodes.getLoad();
     }
@@ -84,7 +89,7 @@ public enum BuiltInType implements Type {
     }
 
     @Override
-    public int getDividOpcode() {
+    public int getDivideOpcode() {
         return opcodes.getDivide();
     }
 }

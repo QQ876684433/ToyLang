@@ -41,7 +41,7 @@ public class ArithmeticExpressionGenerator {
     public void generate(Division expression) {
         evaluateArithmeticComponents(expression);
         Type type = expression.getType();
-        methodVisitor.visitInsn(type.getDividOpcode());
+        methodVisitor.visitInsn(type.getDivideOpcode());
     }
 
     private void evaluateArithmeticComponents(ArthimeticExpression expression) {
