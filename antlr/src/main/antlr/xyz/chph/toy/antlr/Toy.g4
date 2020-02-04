@@ -58,7 +58,7 @@ statement :     block
                | ifStatement
                | expression ;
 
-variableDeclaration : VARIABLE name EQUALS expression ;
+variableDeclaration : (VARIABLE | type) name EQUALS expression ;
 assignment : name EQUALS expression;
 printStatement : PRINT expression ;
 returnStatement : 'return' expression #ReturnWithValue

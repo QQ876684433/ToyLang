@@ -5,25 +5,31 @@ import xyz.chph.toy.domain.node.expression.Argument;
 import xyz.chph.toy.domain.type.BuiltInType;
 import xyz.chph.toy.domain.type.ClassType;
 import xyz.chph.toy.domain.type.Type;
-import xyz.chph.toy.exception.FieldNotFoundException;
-import xyz.chph.toy.exception.LocalVariableNotFoundException;
-import xyz.chph.toy.exception.MethodSignatureNotFoundException;
-import xyz.chph.toy.exception.MethodWithNameAlreadyDefinedException;
+import xyz.chph.toy.exception.*;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.map.LinkedMap;
+import xyz.chph.toy.utils.TypeResolver;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import static java.util.stream.Collectors.toList;
 
 public class Scope {
     private final List<FunctionSignature> functionSignatures;
     private final MetaData metaData;
+    private final Namespace namespace;
     private final LinkedMap<String, LocalVariable> localVariables;
     private final Map<String, Field> fields;
 
-    public Scope(MetaData metaData) {
+    public Scope(MetaData metaData, Namespace namespace) {
         this.metaData = metaData;
+        this.namespace = namespace;
         functionSignatures = new ArrayList<>();
         localVariables = new LinkedMap<>();
         fields = new LinkedMap<>();
@@ -31,6 +37,7 @@ public class Scope {
 
     public Scope(Scope scope) {
         metaData = scope.metaData;
+        namespace = scope.namespace;
         functionSignatures = Lists.newArrayList(scope.functionSignatures);
         fields = new LinkedMap<>(scope.fields);
         localVariables = new LinkedMap<>(scope.localVariables);
@@ -143,4 +150,40 @@ public class Scope {
         return getClassType().getInternalName();
     }
 
+    /**
+     * search for qualified name in namespace,
+     * return typeName itself(maybe built-in type of unqualified name) if not exists
+     *
+     * @param typeName unqualified class name
+     * @return qualified class name
+     */
+    public String getQualifiedNameFromTypeName(String typeName) {
+        // todo
+
+        File rt = new File(System.getenv("JAVA_HOME"), "jre/lib/rt.jar");
+        if (!rt.exists()) {
+            throw new JreNotFoundException();
+        }
+        JarFile rtJar = null;
+        try {
+            rtJar = new JarFile(rt);
+        } catch (IOException e) {
+            System.err.println("oh shit the compiler fucked up at reading java runtime jar!");
+            System.exit(1);
+        }
+
+        boolean isExists = false;
+        String qualifiedName = typeName;
+        for (String module : namespace.getSubModules()) {
+            JarEntry entry = rtJar.getJarEntry(
+                    (module + "/" + typeName).replace('.', '/') + ".class"
+            );
+            if (entry != null) {
+                if (isExists) throw new AmbiguousTypeNameException(typeName);
+                qualifiedName = module + '.' + typeName;
+                isExists = true;
+            }
+        }
+        return qualifiedName;
+    }
 }

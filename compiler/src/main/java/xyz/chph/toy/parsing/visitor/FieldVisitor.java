@@ -18,7 +18,8 @@ public class FieldVisitor extends ToyBaseVisitor<Field> {
     @Override
     public Field visitField(@NotNull ToyParser.FieldContext ctx) {
         Type owner = scope.getClassType();
-        Type type = TypeResolver.getFromTypeContext(ctx.type());
+        String qualifiedName = scope.getQualifiedNameFromTypeName(ctx.type().getText());
+        Type type = TypeResolver.getFromTypeName(qualifiedName);
         String name = ctx.name().getText();
         return new Field(name, owner, type);
     }

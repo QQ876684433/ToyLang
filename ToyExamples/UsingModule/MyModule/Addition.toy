@@ -1,9 +1,28 @@
 module UsingModule.MyModule
 
+using java.util.*
+using java.io.*
+
 Addition {
+    StringBuilder sb
 
     start() {
+        var str = new String("soidj")
+        sb = new StringBuilder("sbsauhdf")
+        var f = new File("")
+        print str
+        print sb.toString()
         print apply(1, 2)
+        print test(str)
+    }
+
+    String test(String arg) {
+        String res = arg + " -> test()"
+        print res
+        var ret = res + "!!!!!!!!!!!!!!!!"
+        int a = 10
+        print a
+        return ret
     }
 
     int apply(int x, int y) {

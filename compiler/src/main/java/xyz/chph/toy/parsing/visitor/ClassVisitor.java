@@ -12,6 +12,7 @@ import xyz.chph.toy.domain.node.expression.Parameter;
 import xyz.chph.toy.domain.node.statement.Block;
 import xyz.chph.toy.domain.scope.Field;
 import xyz.chph.toy.domain.scope.FunctionSignature;
+import xyz.chph.toy.domain.scope.Namespace;
 import xyz.chph.toy.domain.scope.Scope;
 import xyz.chph.toy.domain.type.BuiltInType;
 
@@ -25,15 +26,18 @@ import static java.util.stream.Collectors.toList;
 public class ClassVisitor extends ToyBaseVisitor<ClassDeclaration> {
     private Scope scope;
     private MetaData metaData;
+    private Namespace namespace;
 
-    public ClassVisitor(MetaData metaData) {
+    public ClassVisitor(MetaData metaData, Namespace namespace) {
         this.metaData = metaData;
+        this.namespace = namespace;
     }
 
     @Override
     public ClassDeclaration visitClassDeclaration(ToyParser.ClassDeclarationContext ctx) {
         scope = new Scope(
-                new MetaData(metaData.getModuleName(), ctx.className().getText(), "java.lang.Object")
+                new MetaData(metaData.getModuleName(), ctx.className().getText(), "java.lang.Object"),
+                namespace
         );
         String name = scope.getClassName();
         FieldVisitor fieldVisitor = new FieldVisitor(scope);

@@ -27,25 +27,26 @@ public class CallExpressionVisitor extends ToyBaseVisitor<Call> {
     @Override
     public Call visitFunctionCall(@NotNull ToyParser.FunctionCallContext ctx) {
         String functionName = ctx.functionName().getText();
-        if (functionName.equals(scope.getClassName())) {
+        String className = scope.getClassName();
+        if (className.endsWith('.' + functionName)) {
             throw new FunctionNameEqualClassException(functionName);
         }
         List<Argument> arguments = getArgumentsForCall(ctx.argumentList());
         boolean ownerIsExplicit = ctx.owner != null;
         if (ownerIsExplicit) {
             Expression owner = ctx.owner.accept(expressionVisitor);
-            FunctionSignature signature = scope.getMethodCallSignature(Optional.of(owner.getType()),functionName, arguments);
+            FunctionSignature signature = scope.getMethodCallSignature(Optional.of(owner.getType()), functionName, arguments);
             return new FunctionCall(signature, arguments, owner);
         }
         ClassType thisType = new ClassType(scope.getClassName());
         FunctionSignature signature = scope.getMethodCallSignature(functionName, arguments);
-        LocalVariable thisVariable = new LocalVariable("this",thisType);
+        LocalVariable thisVariable = new LocalVariable("this", thisType);
         return new FunctionCall(signature, arguments, new LocalVariableReference(thisVariable));
     }
 
     @Override
     public Call visitConstructorCall(@NotNull ToyParser.ConstructorCallContext ctx) {
-        String className = ctx.className().getText();
+        String className = scope.getQualifiedNameFromTypeName(ctx.className().getText());
         List<Argument> arguments = getArgumentsForCall(ctx.argumentList());
         return new ConstructorCall(className, arguments);
     }
