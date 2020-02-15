@@ -9,12 +9,22 @@ Toy is a simple programming language running on the jvm, which is envolved from 
   `./gradlew :antlr:generateGrammarSource `
   
 - Compile `*.toy` to `*.class`    
-  Using a gradle plugin in IDEA 
-  
-  or by shell:
+  command line usage:
   
   ```shell
-  java -jar xxx.jar xyz.chph.compiler.Compiler xxx.toy
+  usage: Compiler [-d <destination>] [-h] [-s <source>]
+   -d,--dest <destination>   the output directory of the class files,
+                             otherwise the root directory of project as
+                             default.
+   -h,--help                 show this help message and exit program
+   -s,--src <source>         the root directory of your project,
+                             otherwise the workspace directory as default.
+  ```
+  
+  example: 
+  
+  ```shell
+  java -jar xyz.chph.toy.compiler-0.0.1-SNAPSHOT.jar -s ToyExamples/ -d build/
   ```
   
 - Run
