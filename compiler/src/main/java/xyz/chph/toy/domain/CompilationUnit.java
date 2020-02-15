@@ -1,9 +1,11 @@
 package xyz.chph.toy.domain;
 
 public class CompilationUnit {
+    private ImportDeclaration importDeclaration;
     private ClassDeclaration classDeclaration;
 
-    public CompilationUnit(ClassDeclaration classDeclaration) {
+    public CompilationUnit(ImportDeclaration importDeclaration, ClassDeclaration classDeclaration) {
+        this.importDeclaration = importDeclaration;
         this.classDeclaration = classDeclaration;
     }
 

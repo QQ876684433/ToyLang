@@ -117,6 +117,8 @@ public class Compiler {
         if (!Files.exists(this.destination)) {
             Files.createDirectory(this.destination);
         }
+
+        Map<String, CompilationUnit> compilationUnitMap = new HashMap<>();
         for (final File toyFile : toyFiles) {
             String fileAbsolutePath = toyFile.getAbsolutePath();
             Path projectPath = Paths.get(this.source.toUri());
@@ -124,8 +126,21 @@ public class Compiler {
             String module = projectPath.relativize(toyFilePath).toString();
 //                    .replace("/", ".");
             final CompilationUnit compilationUnit = new Parser().getCompilationUnit(fileAbsolutePath);
-            saveBytecodeToClassFile(module, compilationUnit);
+            compilationUnitMap.put(module, compilationUnit);
         }
+        symbolBackFill(compilationUnitMap);
+        compilationUnitMap.forEach((module, compilationUnit) -> {
+            try {
+                saveBytecodeToClassFile(module, compilationUnit);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        });
+    }
+
+    private void symbolBackFill(Map<String, CompilationUnit> compilationUnitMap) {
+
     }
 
     private void saveBytecodeToClassFile(String module, CompilationUnit compilationUnit) throws IOException {
