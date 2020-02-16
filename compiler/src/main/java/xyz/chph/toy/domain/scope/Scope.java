@@ -1,5 +1,8 @@
 package xyz.chph.toy.domain.scope;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Opcodes;
 import xyz.chph.toy.domain.MetaData;
 import xyz.chph.toy.domain.node.expression.Argument;
 import xyz.chph.toy.domain.type.BuiltInType;
@@ -8,12 +11,10 @@ import xyz.chph.toy.domain.type.Type;
 import xyz.chph.toy.exception.*;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.map.LinkedMap;
-import xyz.chph.toy.utils.TypeResolver;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -68,7 +69,7 @@ public class Scope {
         boolean isDifferentThanCurrentClass = !className.equals(getClassName());
         if (isDifferentThanCurrentClass) {
             List<Type> argumentsTypes = arguments.stream().map(Argument::getType).collect(toList());
-            return new ClassPathScope().getConstructorSignature(className, argumentsTypes)
+            return new ClassPathScope(this).getConstructorSignature(className, argumentsTypes)
                     .orElseThrow(() -> new MethodSignatureNotFoundException(this, className, arguments));
         }
         return getConstructorCallSignatureForCurrentClass(arguments);
@@ -82,7 +83,7 @@ public class Scope {
         boolean isDifferentThanCurrentClass = owner.isPresent() && !owner.get().equals(getClassType());
         if (isDifferentThanCurrentClass) {
             List<Type> argumentsTypes = arguments.stream().map(Argument::getType).collect(toList());
-            return new ClassPathScope().getMethodSignature(owner.get(), methodName, argumentsTypes)
+            return new ClassPathScope(this).getMethodSignature(owner.get(), methodName, argumentsTypes)
                     .orElseThrow(() -> new MethodSignatureNotFoundException(this, methodName, arguments));
         }
         return getMethodCallSignature(methodName, arguments);
@@ -179,11 +180,96 @@ public class Scope {
                     (module + "/" + typeName).replace('.', '/') + ".class"
             );
             if (entry != null) {
-                if (isExists) throw new AmbiguousTypeNameException(typeName);
+                if (isExists) throw new AmbiguousTypeNameException(typeName, new String[]{
+                        qualifiedName, module + '.' + typeName
+                });
                 qualifiedName = module + '.' + typeName;
                 isExists = true;
             }
         }
+
+        // search in workspace
+        File workspace = new File("build");
+        File[] files = workspace.listFiles();
+        Queue<File> fileQueue = new LinkedList<>(Arrays.asList(files));
+        while (!fileQueue.isEmpty()) {
+            File file = fileQueue.peek();
+            fileQueue.remove();
+            System.out.println("file: " + file.getAbsolutePath());
+            if (file.isDirectory()) {
+                fileQueue.addAll(Arrays.asList(file.listFiles()));
+                continue;
+            }
+            if (file.getName().endsWith(".jar")) {
+                try {
+                    JarFile jar = new JarFile(file);
+                    for (String module : namespace.getSubModules()) {
+                        JarEntry entry = jar.getJarEntry(
+                                (module + "/" + typeName).replace('.', '/') + ".class"
+                        );
+                        if (entry != null) {
+                            if (isExists) throw new AmbiguousTypeNameException(typeName, new String[]{
+                                    qualifiedName, module + '.' + typeName
+                            });
+                            qualifiedName = module + '.' + typeName;
+                            isExists = true;
+                        }
+                    }
+                } catch (IOException ignored) {
+                }
+            } else if (file.getName().endsWith(".class")) {
+                try {
+                    ClassReader classReader = new ClassReader(new FileInputStream(file));
+                    class Visitor extends ClassVisitor {
+                        private String className;
+
+                        public Visitor() {
+                            super(Opcodes.ASM4);
+                        }
+
+                        @Override
+                        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+                            super.visit(version, access, name, signature, superName, interfaces);
+                            this.className = name;
+                        }
+
+                        public String getClassName() {
+                            return className;
+                        }
+                    }
+                    Visitor visitor = new Visitor();
+                    classReader.accept(visitor, 0);
+                    System.out.println("visitor: " + visitor.getClassName());
+                    for (String module : namespace.getSubModules()) {
+                        System.out.println(visitor.getClassName()
+                                .replace('/', '.'));
+                        System.out.println(module + '.' + typeName);
+                        if (visitor.getClassName()
+                                .replace('/', '.')
+                                .equals(module + '.' + typeName)
+                        ) {
+                            if (isExists) throw new AmbiguousTypeNameException(typeName, new String[]{
+                                    qualifiedName, module + '.' + typeName
+                            });
+                            qualifiedName = module + '.' + typeName;
+                            isExists = true;
+                        }
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+        }
+
+        for (String name : namespace.getQualifiedNames()) {
+            if (name.substring(name.lastIndexOf(".") + 1).equals(typeName)) {
+                if (isExists) throw new AmbiguousTypeNameException(typeName, new String[]{
+                        qualifiedName, name
+                });
+                qualifiedName = name;
+                isExists = true;
+            }
+        }
+
         return qualifiedName;
     }
 }

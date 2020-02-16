@@ -7,6 +7,6 @@ Test {
         Addition add = new Addition()
         var a = 1
         var res = add.apply(a, 2)
-        print res
+//        print res
     }
 }
