@@ -1,6 +1,7 @@
 package xyz.chph.toy.domain.scope;
 
 import xyz.chph.toy.bytecodegenerator.FieldGenerator;
+import xyz.chph.toy.domain.type.ClassType;
 import xyz.chph.toy.domain.type.Type;
 
 public class Field implements Variable {
@@ -13,6 +14,18 @@ public class Field implements Variable {
         this.name = name;
         this.type = type;
         this.owner = owner;
+    }
+
+    // owner must be ClassType
+    public void setOwner(String owner) {
+        // TODO assert should be remove in release version
+        assert this.owner instanceof ClassType : "owner of Field must be ClassType";
+        ((ClassType) this.owner).setName(owner);
+    }
+
+    public void setType(String type) {
+        if (this.type instanceof ClassType)
+            ((ClassType) this.type).setName(type);
     }
 
     @Override

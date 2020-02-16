@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @ToString
 public class ClassType implements Type {
+    // interface name separated by . rather than qualified name separated by /
     private String name;
 
     private static final Map<String, String> shortcuts = ImmutableMap.of(
@@ -42,6 +43,10 @@ public class ClassType implements Type {
     @Override
     public String getName() {
         return name;
+    }
+
+    public void setName(String interfaceName) {
+        this.name = interfaceName;
     }
 
     @Override

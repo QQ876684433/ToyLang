@@ -1,8 +1,18 @@
 package xyz.chph.toy.compiler;
 
 import org.apache.commons.cli.*;
+import xyz.chph.toy.domain.ClassDeclaration;
 import xyz.chph.toy.domain.CompilationUnit;
 import xyz.chph.toy.bytecodegenerator.BytecodeGenerator;
+import xyz.chph.toy.domain.Function;
+import xyz.chph.toy.domain.ImportDeclaration;
+import xyz.chph.toy.domain.node.expression.Parameter;
+import xyz.chph.toy.domain.node.statement.Block;
+import xyz.chph.toy.domain.node.statement.Statement;
+import xyz.chph.toy.domain.scope.Field;
+import xyz.chph.toy.domain.scope.FunctionSignature;
+import xyz.chph.toy.domain.type.ClassType;
+import xyz.chph.toy.domain.type.Type;
 import xyz.chph.toy.parsing.Parser;
 import xyz.chph.toy.validation.ARGUMENT_ERRORS;
 import org.apache.commons.io.IOUtils;
@@ -123,8 +133,7 @@ public class Compiler {
             String fileAbsolutePath = toyFile.getAbsolutePath();
             Path projectPath = Paths.get(this.source.toUri());
             Path toyFilePath = Paths.get(fileAbsolutePath).getParent();
-            String module = projectPath.relativize(toyFilePath).toString();
-//                    .replace("/", ".");
+            String module = projectPath.relativize(toyFilePath).toString().replace("/", ".");
             final CompilationUnit compilationUnit = new Parser().getCompilationUnit(fileAbsolutePath);
             compilationUnitMap.put(module, compilationUnit);
         }
@@ -139,8 +148,63 @@ public class Compiler {
         });
     }
 
+    /**
+     * 符号回填
+     *
+     * @param compilationUnitMap String: 当前编译单元的模块名，以.作为分隔符
+     *                           CompilationUnit: 编译单元，即一个toy文件
+     */
     private void symbolBackFill(Map<String, CompilationUnit> compilationUnitMap) {
+        Map<String, List<Function>> interfaces = new HashMap<>();
+        // 获取所有类的方法声明
+        for (Map.Entry<String, CompilationUnit> entry : compilationUnitMap.entrySet()) {
+            CompilationUnit compilationUnit = entry.getValue();
+            ClassDeclaration classDeclaration = compilationUnit.getClassDeclaration();
+            String className = entry.getKey() + "." + classDeclaration.getName();
+            interfaces.put(className, classDeclaration.getMethods());
+        }
+        // 开始回填
+        for (Map.Entry<String, CompilationUnit> entry : compilationUnitMap.entrySet()) {
+            ClassDeclaration classDeclaration = entry.getValue().getClassDeclaration();
+            ImportDeclaration importDeclaration = entry.getValue().getImportDeclaration();
 
+            // 回填类的模块部分
+            classDeclaration.setModule(entry.getKey());
+
+            // 回填域部分
+            List<Field> fields = classDeclaration.getFields();
+            fields.forEach(field -> {
+                if (field.getType() instanceof ClassType) {
+                    Optional<String> interfaceName = importDeclaration.get(field.getType().getName());
+                    interfaceName.ifPresent(field::setType);
+                }
+                field.setOwner(classDeclaration.getQualifiedName());
+            });
+
+            // 回填方法部分
+            List<Function> methods = classDeclaration.getMethods();
+            methods.forEach(method -> {
+                List<Parameter> parameters = method.getParameters();
+                Type returnType = method.getReturnType();
+                Block block = (Block) method.getRootStatement();
+                // 回填参数类型
+                parameters.forEach(parameter -> {
+                    if (parameter.getType() instanceof ClassType){
+                        Optional<String> interfaceName = importDeclaration.get(parameter.getType().getName());
+                        interfaceName.ifPresent(parameter::setType);
+                    }
+                });
+                // 回填返回值类型
+                if (returnType instanceof ClassType) {
+                    Optional<String> interfaceName = importDeclaration.get(returnType.getName());
+                    interfaceName.ifPresent(((ClassType) returnType)::setName);
+                }
+                // 回填函数体中的类型
+                block.getStatements().forEach(statement -> {
+
+                });
+            });
+        }
     }
 
     private void saveBytecodeToClassFile(String module, CompilationUnit compilationUnit) throws IOException {

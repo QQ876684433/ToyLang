@@ -27,17 +27,21 @@ public class ClassVisitor extends ToyBaseVisitor<ClassDeclaration> {
 
     @Override
     public ClassDeclaration visitClassDeclaration(ToyParser.ClassDeclarationContext ctx) {
+        // todo 这里需要回填为全限定名
         MetaData metaData = new MetaData(ctx.className().getText(),"java.lang.Object");
         scope = new Scope(metaData);
         String name = ctx.className().getText();
+        // todo FieldVisitor里面也使用了scope，因此也可能需要回填
         FieldVisitor fieldVisitor = new FieldVisitor(scope);
         FunctionSignatureVisitor functionSignatureVisitor = new FunctionSignatureVisitor(scope);
         List<ToyParser.FunctionContext> methodsCtx = ctx.classBody().function();
         List<Field> fields = ctx.classBody().field().stream()
+                // todo 这里开始遍历域的声明
                 .map(field -> field.accept(fieldVisitor))
                 .peek(scope::addField)
                 .collect(toList());
         methodsCtx.stream()
+                // todo 方法签名需要回填
                 .map(method -> method.functionDeclaration().accept(functionSignatureVisitor))
                 .forEach(scope::addSignature);
         boolean defaultConstructorExists = scope.isParameterLessSignatureExists(name);

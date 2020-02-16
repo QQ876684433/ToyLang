@@ -17,9 +17,11 @@ public class FieldVisitor extends ToyBaseVisitor<Field> {
 
     @Override
     public Field visitField(@NotNull ToyParser.FieldContext ctx) {
+        // todo 这里除了String或string、内置类型，都是没有全限定名的类型名，因此也需要回填
         Type owner = scope.getClassType();
         Type type = TypeResolver.getFromTypeContext(ctx.type());
         String name = ctx.name().getText();
+        // todo 因此，类定义中的所有域Field的type和owner均需要回填
         return new Field(name, owner, type);
     }
 }

@@ -18,11 +18,11 @@ public class ClassGenerator {
     }
 
     public ClassWriter generate(ClassDeclaration classDeclaration) {
-        String name = classDeclaration.getName();
+        String name = classDeclaration.getQualifiedName();
         classWriter.visit(
                 CLASS_VERSION,
                 Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER,
-                name,
+                name,    // separated by '/'
                 null,
                 "java/lang/Object",
                 null

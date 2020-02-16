@@ -34,6 +34,7 @@ public class CallExpressionVisitor extends ToyBaseVisitor<Call> {
         boolean ownerIsExplicit = ctx.owner != null;
         if (ownerIsExplicit) {
             Expression owner = ctx.owner.accept(expressionVisitor);
+            // todo 对于类外的方法调用需要回填实际的方法调用，根据owner、方法名和参数类型查找
             FunctionSignature signature = scope.getMethodCallSignature(Optional.of(owner.getType()),functionName, arguments);
             return new FunctionCall(signature, arguments, owner);
         }
@@ -47,6 +48,7 @@ public class CallExpressionVisitor extends ToyBaseVisitor<Call> {
     public Call visitConstructorCall(@NotNull ToyParser.ConstructorCallContext ctx) {
         String className = ctx.className().getText();
         List<Argument> arguments = getArgumentsForCall(ctx.argumentList());
+        // todo 需要回填为实际类的构造函数调用
         return new ConstructorCall(className, arguments);
     }
 

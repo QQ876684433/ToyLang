@@ -2,6 +2,7 @@ package xyz.chph.toy.domain.scope;
 
 import xyz.chph.toy.domain.MetaData;
 import xyz.chph.toy.domain.node.expression.Argument;
+import xyz.chph.toy.domain.node.expression.Parameter;
 import xyz.chph.toy.domain.type.BuiltInType;
 import xyz.chph.toy.domain.type.ClassType;
 import xyz.chph.toy.domain.type.Type;
@@ -73,8 +74,13 @@ public class Scope {
         boolean isDifferentThanCurrentClass = owner.isPresent() && !owner.get().equals(getClassType());
         if(isDifferentThanCurrentClass) {
             List<Type> argumentsTypes = arguments.stream().map(Argument::getType).collect(toList());
-            return new ClassPathScope().getMethodSignature(owner.get(), methodName, argumentsTypes)
-                    .orElseThrow(() -> new MethodSignatureNotFoundException(this,methodName,arguments));
+//            return new ClassPathScope().getMethodSignature(owner.get(), methodName, argumentsTypes)
+//                    .orElseThrow(() -> new MethodSignatureNotFoundException(this,methodName,arguments));
+            // todo 使用占位符代替类外的方法调用，然后再回填实际的方法调用
+            List<Parameter> parametersTypes = argumentsTypes.stream()
+                    .map(argumentType->new Parameter(null, argumentType, null))
+                    .collect(toList());
+            return new FunctionSignature(methodName, parametersTypes, null);
         }
         return getMethodCallSignature(methodName, arguments);
     }

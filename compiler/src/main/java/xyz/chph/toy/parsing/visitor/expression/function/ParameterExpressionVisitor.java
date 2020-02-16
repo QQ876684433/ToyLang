@@ -19,12 +19,14 @@ public class ParameterExpressionVisitor extends ToyBaseVisitor<Parameter> {
     @Override
     public Parameter visitParameter(@NotNull ToyParser.ParameterContext ctx) {
         String name = ctx.ID().getText();
+        // todo 参数类型需要回填
         Type type = TypeResolver.getFromTypeContext(ctx.type());
         return new Parameter(name, type, Optional.empty());
     }
     @Override
     public Parameter visitParameterWithDefaultValue(@NotNull ToyParser.ParameterWithDefaultValueContext ctx) {
         String name = ctx.ID().getText();
+        // todo 参数类型需要回填，由于情况比较复杂，先不考虑默认参数的情况
         Type type = TypeResolver.getFromTypeContext(ctx.type());
         Expression defaultValue = ctx.defaultValue.accept(expressionVisitor);
         return new Parameter(name, type, Optional.of(defaultValue));

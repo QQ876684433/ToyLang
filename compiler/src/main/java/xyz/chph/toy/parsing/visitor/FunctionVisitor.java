@@ -21,7 +21,9 @@ public class FunctionVisitor extends ToyBaseVisitor<Function> {
     @Override
     public Function visitFunction(@NotNull ToyParser.FunctionContext ctx) {
         FunctionSignature signature = ctx.functionDeclaration().accept(new FunctionSignatureVisitor(scope));
+        // todo 每个方法中的this引用的类型需要回填为全限定名
         scope.addLocalVariable(new LocalVariable("this",scope.getClassType()));
+        // todo 每个方法的局部变量（包括参数）的类型也需要回填为全限定名
         addParametersAsLocalVariables(signature);
         Statement block = getBlock(ctx);
         if(signature.getName().equals(scope.getClassName())) {

@@ -16,11 +16,13 @@ public class ImportVisitor extends ToyBaseVisitor<ImportDeclaration> {
         ImportDeclaration importDeclaration = new ImportDeclaration();
         String qualifiedName = ctx.qualifiedName().getText();
         List<ToyParser.ImportReferenceContext> importReferenceContexts = ctx.importList().importReference();
-        importReferenceContexts.stream().map(importReferenceContext -> {
+        importReferenceContexts.forEach(importReferenceContext -> {
             List<TerminalNode> IDs = importReferenceContext.ID();
-            if (IDs.size() > 1) return IDs.get(1).getText();
-            else return IDs.get(0).getText();
-        }).forEach(id -> importDeclaration.add(id, qualifiedName + "." + id));
+            String className = IDs.get(0).getText();
+            String alias = className;
+            if (IDs.size() > 1) alias = IDs.get(1).getText();
+            importDeclaration.add(alias, qualifiedName + "." + className);
+        });
         return importDeclaration;
     }
 }

@@ -14,6 +14,10 @@ public class CompilationUnit {
         return classDeclaration;
     }
 
+    public ImportDeclaration getImportDeclaration() {
+        return importDeclaration;
+    }
+
 
     public String getClassName() {
         return classDeclaration.getName();

@@ -2,6 +2,7 @@ package xyz.chph.toy.domain.node.expression;
 
 import xyz.chph.toy.bytecodegenerator.expression.ExpressionGenerator;
 import xyz.chph.toy.bytecodegenerator.statement.StatementGenerator;
+import xyz.chph.toy.domain.type.ClassType;
 import xyz.chph.toy.domain.type.Type;
 
 import java.util.Optional;
@@ -38,6 +39,11 @@ public class Parameter implements Expression {
     @Override
     public Type getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        if (this.type instanceof ClassType)
+            ((ClassType) this.type).setName(type);
     }
 
     @Override

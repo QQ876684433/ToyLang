@@ -2,6 +2,7 @@ package xyz.chph.toy.domain;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by steve_chph, 21:55
@@ -21,5 +22,9 @@ public class ImportDeclaration {
 
     public void add(String reference, String qualifiedName) {
         imports.put(reference, qualifiedName);
+    }
+
+    public Optional<String> get(String className) {
+        return Optional.of(imports.get(className));
     }
 }

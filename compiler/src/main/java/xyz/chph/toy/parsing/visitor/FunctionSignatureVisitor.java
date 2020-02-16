@@ -22,12 +22,15 @@ public class FunctionSignatureVisitor extends ToyBaseVisitor<FunctionSignature> 
     @Override
     public FunctionSignature visitFunctionDeclaration(@NotNull ToyParser.FunctionDeclarationContext ctx) {
         String functionName = ctx.functionName().getText();
+        // todo 返回值类型需要回填成全限定名
         Type returnType = TypeResolver.getFromTypeContext(ctx.type());
         ToyParser.ParametersListContext parametersCtx = ctx.parametersList();
         if(parametersCtx != null) {
+            // todo 参数列表需要回填
             List<Parameter> parameters = parametersCtx.accept(new ParameterExpressionListVisitor(expressionVisitor));
             return new FunctionSignature(functionName, parameters, returnType);
         }
+        // todo 参数列表为空时不需要回填
         return new FunctionSignature(functionName, Collections.emptyList(), returnType);
     }
 }
