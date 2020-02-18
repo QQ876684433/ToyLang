@@ -21,7 +21,7 @@ public final class TypeResolver {
 
 
     public static Type getFromTypeName(String typeName) {
-        if(typeName.equals("java.lang.String")) return BuiltInType.STRING;
+        if(typeName.equals("String")) return BuiltInType.STRING;
         Optional<? extends Type> builtInType = getBuiltInType(typeName);
         if(builtInType.isPresent()) return builtInType.get();
         return new ClassType(typeName);

@@ -12,7 +12,7 @@ import xyz.chph.toy.parsing.visitor.CompilationUnitVisitor;
 import java.io.IOException;
 
 public class Parser {
-    public CompilationUnit getCompilationUnit(String fileAbsolutePath) throws IOException {
+    public CompilationUnit getCompilationUnit(String module, String fileAbsolutePath) throws IOException {
         CharStream charStream = new ANTLRFileStream(fileAbsolutePath);
         ToyLexer lexer = new ToyLexer(charStream);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
@@ -21,7 +21,7 @@ public class Parser {
         ANTLRErrorListener errorListener = new ToyTreeWalkErrorListener();
         parser.addErrorListener(errorListener);
 
-        CompilationUnitVisitor compilationUnitVisitor = new CompilationUnitVisitor();
+        CompilationUnitVisitor compilationUnitVisitor = new CompilationUnitVisitor(module);
         return parser.compilationUnit().accept(compilationUnitVisitor);
     }
 }

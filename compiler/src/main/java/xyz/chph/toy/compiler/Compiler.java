@@ -4,13 +4,9 @@ import org.apache.commons.cli.*;
 import xyz.chph.toy.domain.CompilationUnit;
 import xyz.chph.toy.bytecodegenerator.BytecodeGenerator;
 import xyz.chph.toy.parsing.Parser;
-import xyz.chph.toy.validation.ARGUMENT_ERRORS;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -92,8 +88,10 @@ public class Compiler {
         } else {
             destination = Paths.get(source.toUri());
         }
-        System.out.println("source: " + source.toString());
-        System.out.println("destination: " + destination.toString());
+        // 将编译输出目录添加到classpath
+        String key = "java.class.path";
+        String classpath = System.getProperty(key);
+        System.setProperty(key, destination.toString() + ":" + classpath);
 
         // 开始编译项目
         try {
@@ -118,38 +116,27 @@ public class Compiler {
             Files.createDirectory(this.destination);
         }
 
-        Map<String, CompilationUnit> compilationUnitMap = new HashMap<>();
         for (final File toyFile : toyFiles) {
             String fileAbsolutePath = toyFile.getAbsolutePath();
+            System.out.println(fileAbsolutePath);
             Path projectPath = Paths.get(this.source.toUri());
             Path toyFilePath = Paths.get(fileAbsolutePath).getParent();
             String module = projectPath.relativize(toyFilePath).toString();
-//                    .replace("/", ".");
-            final CompilationUnit compilationUnit = new Parser().getCompilationUnit(fileAbsolutePath);
-            compilationUnitMap.put(module, compilationUnit);
+            final CompilationUnit compilationUnit = new Parser()
+                    .getCompilationUnit(module.replace("/", "."), fileAbsolutePath);
+            saveBytecodeToClassFile(compilationUnit);
         }
-        symbolBackFill(compilationUnitMap);
-        compilationUnitMap.forEach((module, compilationUnit) -> {
-            try {
-                saveBytecodeToClassFile(module, compilationUnit);
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        });
     }
 
-    private void symbolBackFill(Map<String, CompilationUnit> compilationUnitMap) {
-
-    }
-
-    private void saveBytecodeToClassFile(String module, CompilationUnit compilationUnit) throws IOException {
+    private void saveBytecodeToClassFile(CompilationUnit compilationUnit) throws IOException {
         BytecodeGenerator bytecodeGenerator = new BytecodeGenerator();
         final byte[] byteCode = bytecodeGenerator.generate(compilationUnit);
         String className = compilationUnit.getClassName();
         String fileName = className + ".class";
-        Path output = Paths.get(this.destination.toString(), module, fileName);
-        OutputStream os = new FileOutputStream(output.toFile());
+        File dir = new File(this.destination.toString());
+        if (!dir.exists()) dir.mkdirs();
+        File file = new File(this.destination.toString() + "/" + fileName);
+        OutputStream os = new FileOutputStream(file);
         IOUtils.write(byteCode, os);
     }
 }

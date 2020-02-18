@@ -85,6 +85,7 @@ public class FunctionSignature {
         if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
         return !(returnType != null ? !returnType.equals(that.returnType) : that.returnType != null);
     }
+
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
@@ -92,6 +93,7 @@ public class FunctionSignature {
         result = 31 * result + (returnType != null ? returnType.hashCode() : 0);
         return result;
     }
+
     @Override
     public String toString() {
         return "FunctionSignature{" +

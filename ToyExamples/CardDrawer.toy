@@ -1,3 +1,6 @@
+import {Integer} from java.lang
+import {Random, List} from java.util
+
 CardDrawer {
     start {
         var cards = new List()
@@ -10,7 +13,7 @@ CardDrawer {
     }
      addNumberedCards(List cardsList,int first=2, int last=10) {
         for i from first to last {
-            var numberString = new java.lang.Integer(i).toString()
+            var numberString = new Integer(i).toString()
             addCardWithAllColors(numberString,cardsList)
         }
     }
@@ -25,9 +28,9 @@ CardDrawer {
             print "ERROR - Not enough cards"
             return
         }
-        var random = new java.util.Random()
+        var random = new Random()
         for i from 1 to playersAmount {
-            var playernumberString = new java.lang.Integer(i).toString()
+            var playernumberString = new Integer(i).toString()
             print "player " + playernumberString  + " is drawing:"
             for j from 1 to cardsPerPlayer {
                 var dawnCardIndex = random.nextInt(cardsList.size() - 1)

@@ -9,8 +9,10 @@ import org.objectweb.asm.Opcodes;
 import java.util.Collection;
 import java.util.List;
 
+import static org.objectweb.asm.Opcodes.V1_8;
+
 public class ClassGenerator {
-    private static final int CLASS_VERSION = 52;
+    private static final int CLASS_VERSION = V1_8;
     private ClassWriter classWriter;
 
     public ClassGenerator() {

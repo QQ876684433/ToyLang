@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by steve_chph, 21:55
+ * Created by steve_chph, 2020/02/16 21:55
  */
 public class ImportDeclaration {
     private Map<String, String> imports;
@@ -21,5 +21,9 @@ public class ImportDeclaration {
 
     public void add(String reference, String qualifiedName) {
         imports.put(reference, qualifiedName);
+    }
+
+    public Map<String, String> getImports() {
+        return imports;
     }
 }

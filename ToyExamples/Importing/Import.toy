@@ -1,0 +1,16 @@
+import String from java.lang
+import {File, BufferedWriter, OutputStreamWriter, FileOutputStream } from java.io
+
+Import {
+    start() {
+        var str = new String("hello importing")
+        print str
+        var file = new File("file.txt")
+        var bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))
+        bw.write("hello importing")
+        bw.flush()
+        bw.close()
+        var f = new Function()
+        print f.add(1, 2)
+    }
+}
