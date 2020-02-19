@@ -3,6 +3,7 @@ package xyz.chph.toy.compiler;
 import org.apache.commons.cli.*;
 import xyz.chph.toy.domain.CompilationUnit;
 import xyz.chph.toy.bytecodegenerator.BytecodeGenerator;
+import xyz.chph.toy.exception.TargetModuleNotDeclaredException;
 import xyz.chph.toy.parsing.Parser;
 import org.apache.commons.io.IOUtils;
 
@@ -15,9 +16,11 @@ import java.util.*;
 public class Compiler {
     private Path source;
     private Path destination;
+    private String target;
     private static final String TOY_SUFFIX = ".toy";
 
-    private Compiler(Path source, Path destination) {
+    private Compiler(String target, Path source, Path destination) {
+        this.target = target;
         this.source = source;
         this.destination = destination;
     }
@@ -32,6 +35,15 @@ public class Compiler {
                         .argName("destination")
                         .desc("the output directory of the class files, " +
                                 "\notherwise the root directory of project as default.")
+                        .build()
+        );
+        options.addOption(
+                Option.builder("m")
+                        .longOpt("module")
+                        .hasArg()
+                        .argName("module")
+                        .desc("the module declared in ToyMake.json you want to build, " + "" +
+                                "\notherwise all the modules will be built.")
                         .build()
         );
         options.addOption(
@@ -76,6 +88,7 @@ public class Compiler {
         // 处理编译参数
         Path destination = Paths.get(".");   // 默认目标路径
         Path source = Paths.get(".");    // 默认项目路径
+        String target = "";
         if (result.hasOption("s")) {
             source = Paths.get(result.getOptionValue("s"));
             if (!Files.exists(source)) {
@@ -88,6 +101,9 @@ public class Compiler {
         } else {
             destination = Paths.get(source.toUri());
         }
+        if (result.hasOption("m")) {
+            target = result.getOptionValue("m");
+        }
         // 将编译输出目录添加到classpath
         String key = "java.class.path";
         String classpath = System.getProperty(key);
@@ -95,7 +111,7 @@ public class Compiler {
 
         // 开始编译项目
         try {
-            new Compiler(source, destination).compile();
+            new Compiler(target, source, destination).compile();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -116,14 +132,34 @@ public class Compiler {
             Files.createDirectory(this.destination);
         }
 
-        for (final File toyFile : toyFiles) {
-            String fileAbsolutePath = toyFile.getAbsolutePath();
-            System.out.println(fileAbsolutePath);
-            Path projectPath = Paths.get(this.source.toUri());
-            Path toyFilePath = Paths.get(fileAbsolutePath).getParent();
-            String module = projectPath.relativize(toyFilePath).toString();
-            final CompilationUnit compilationUnit = new Parser()
-                    .getCompilationUnit(module.replace("/", "."), fileAbsolutePath);
+        ToyMake.Configuration configuration = new ToyMake()
+                .getProjectConfiguration(this.source.toString() + "/ToyMake.json");
+        Parser parser = new Parser();
+        List<String> pipeline = new ArrayList<>();
+        if (!this.target.isEmpty()) {
+            Optional<ToyMake.Module> target = configuration.getModules()
+                    .stream()
+                    .filter(module -> module.getModule().equals(this.target))
+                    .findFirst();
+            if (!target.isPresent()) {
+                throw new TargetModuleNotDeclaredException(this.target);
+            }
+            pipeline.addAll(target.get().getPipeline());
+            pipeline.addAll(target.get().getOthers());
+        } else {
+            configuration.getModules().forEach(
+                    module -> {
+                        pipeline.addAll(module.getPipeline());
+                        pipeline.addAll(module.getOthers());
+                    }
+            );
+        }
+        for (String toyFile : pipeline) {
+            System.out.println(toyFile);
+            String fileAbsolutePath = this.source.toString() + "/" + toyFile;
+            String module = extractModule(toyFile);
+            final CompilationUnit compilationUnit =
+                    parser.getCompilationUnit(module.replace("/", "."), fileAbsolutePath);
             saveBytecodeToClassFile(compilationUnit);
         }
     }
@@ -133,10 +169,16 @@ public class Compiler {
         final byte[] byteCode = bytecodeGenerator.generate(compilationUnit);
         String className = compilationUnit.getClassName();
         String fileName = className + ".class";
-        File dir = new File(this.destination.toString());
+        File dir = new File(this.destination.toString() + "/" + extractModule(fileName));
         if (!dir.exists()) dir.mkdirs();
         File file = new File(this.destination.toString() + "/" + fileName);
         OutputStream os = new FileOutputStream(file);
         IOUtils.write(byteCode, os);
+    }
+
+    private String extractModule(String toyFile) {
+        int index = toyFile.lastIndexOf('/');
+        if (index < 0) return "";
+        return toyFile.substring(0, index);
     }
 }

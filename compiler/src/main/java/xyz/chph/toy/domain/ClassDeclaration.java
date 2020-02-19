@@ -11,7 +11,7 @@ public class ClassDeclaration {
     private List<Function> methods;
 
     public ClassDeclaration(String name, List<Field> fields, List<Function> methods) {
-        this.name = name;
+        this.name = name.replace(".", "/");
         this.fields = fields;
         this.methods = methods;
     }

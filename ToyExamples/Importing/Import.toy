@@ -1,5 +1,6 @@
 import String from java.lang
 import {File, BufferedWriter, OutputStreamWriter, FileOutputStream } from java.io
+import Function from Importing
 
 Import {
     start() {
