@@ -1,0 +1,9 @@
+// class declaration
+SingleLine{
+    // start() is the main method of the class in ToyLang
+    // it will be called by JVM automatically
+    start() {
+        // this is a single line
+        println "A test for single line comment."   // single line after source code
+    }
+}

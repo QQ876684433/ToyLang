@@ -26,6 +26,18 @@
         "before": [],
         "after": []
       }
+    },
+    {
+      "module": "Comment",
+      "pipeline": [],
+      "others": [
+        "Comment/SingleLine.toy",
+        "Comment/MultipleLine.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
     }
   ]
 }

@@ -1,0 +1,8 @@
+/**
+ * Created by steve_chph, 2020/02/19 17:36
+ */
+MultipleLine{
+    start /* () can be ignored when there are no arguments */{
+        println "A test for multiple line comment."
+    }
+}
