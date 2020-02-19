@@ -1,0 +1,31 @@
+{
+  "project": "ToyExamples",
+  "modules": [
+    {
+      "module": "Importing",
+      "pipeline": [
+        "Importing/Function.toy",
+        "Importing/Import.toy"
+      ],
+      "others": [],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
+    },
+    {
+      "module": "ClassPathCalls",
+      "pipeline": [
+        "ClassPathCalls/Library.toy",
+        "ClassPathCalls/Client.toy"
+      ],
+      "others": [
+        "ClassPathCalls/TestJava.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
+    }
+  ]
+}

@@ -6,8 +6,28 @@ package xyz.chph.toy.antlr;
 }
 
 //RULES
-compilationUnit : classDeclaration EOF ;
-classDeclaration : className '{' classBody '}' ;
+compilationUnit
+    :   importDeclaration* classDeclaration
+        EOF
+    ;
+
+importDeclaration
+    :   'import' importList 'from' qualifiedName
+    ;
+
+importList
+    :   importReference (',' importReference)*
+    |   '{' importReference (',' importReference)* '}'
+    ;
+
+importReference
+    :   ID ('as' ID)?
+    ;
+
+classDeclaration
+    :   className '{' classBody '}'
+    ;
+
 className : qualifiedName ;
 classBody :  field* function* ;
 field : type name;

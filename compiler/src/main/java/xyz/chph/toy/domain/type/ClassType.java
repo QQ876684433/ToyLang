@@ -1,9 +1,10 @@
 package xyz.chph.toy.domain.type;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.ToString;
 import org.objectweb.asm.Opcodes;
+import xyz.chph.toy.domain.scope.Namespace;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,9 +12,11 @@ import java.util.Optional;
 public class ClassType implements Type {
     private String name;
 
-    private static final Map<String, String> shortcuts = ImmutableMap.of(
-            "List", "java.util.ArrayList"
-    );
+    private static final Map<String, String> shortcuts = new HashMap<>();
+
+    public static void setNamespace(Namespace namespace) {
+        shortcuts.putAll(namespace.getNames());
+    }
 
     public ClassType(String name) {
         this.name = Optional.ofNullable(shortcuts.get(name)).orElse(name);

@@ -27,25 +27,27 @@ public class CallExpressionVisitor extends ToyBaseVisitor<Call> {
     @Override
     public Call visitFunctionCall(@NotNull ToyParser.FunctionCallContext ctx) {
         String functionName = ctx.functionName().getText();
-        if (functionName.equals(scope.getClassName())) {
+        // cannot call constructor explicitly
+        if (isFunctionNameEqualClass(functionName)) {
             throw new FunctionNameEqualClassException(functionName);
         }
         List<Argument> arguments = getArgumentsForCall(ctx.argumentList());
         boolean ownerIsExplicit = ctx.owner != null;
         if (ownerIsExplicit) {
             Expression owner = ctx.owner.accept(expressionVisitor);
-            FunctionSignature signature = scope.getMethodCallSignature(Optional.of(owner.getType()),functionName, arguments);
+            FunctionSignature signature = scope.getMethodCallSignature(Optional.of(owner.getType()), functionName, arguments);
             return new FunctionCall(signature, arguments, owner);
         }
         ClassType thisType = new ClassType(scope.getClassName());
         FunctionSignature signature = scope.getMethodCallSignature(functionName, arguments);
-        LocalVariable thisVariable = new LocalVariable("this",thisType);
+        LocalVariable thisVariable = new LocalVariable("this", thisType);
         return new FunctionCall(signature, arguments, new LocalVariableReference(thisVariable));
     }
 
     @Override
     public Call visitConstructorCall(@NotNull ToyParser.ConstructorCallContext ctx) {
         String className = ctx.className().getText();
+        if (isFunctionNameEqualClass(className)) className = scope.getClassName();
         List<Argument> arguments = getArgumentsForCall(ctx.argumentList());
         return new ConstructorCall(className, arguments);
     }
@@ -62,5 +64,11 @@ public class CallExpressionVisitor extends ToyBaseVisitor<Call> {
             return argumentsListCtx.accept(visitor);
         }
         return Collections.emptyList();
+    }
+
+    private boolean isFunctionNameEqualClass(String functionName) {
+        String[] parts = scope.getClassName().split("\\.");
+        return functionName.equals(scope.getClassName()) || // ?? may be redundant
+                functionName.equals(parts[parts.length - 1]);
     }
 }

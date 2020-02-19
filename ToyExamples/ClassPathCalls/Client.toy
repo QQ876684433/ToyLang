@@ -1,3 +1,5 @@
+import Library from ClassPathCalls
+
 Client {
 
     start {

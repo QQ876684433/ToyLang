@@ -9,16 +9,60 @@ Toy is a simple programming language running on the jvm, which is envolved from 
   `./gradlew :antlr:generateGrammarSource `
   
 - Compile `*.toy` to `*.class`    
-  Using a gradle plugin in IDEA 
-  
-  or by shell:
+  command line usage:
   
   ```shell
-  java -jar xxx.jar xyz.chph.compiler.Compiler xxx.toy
+  usage: Compiler [-d <destination>] [-h] [-m <module>] [-s <source>]
+   -d,--dest <destination>   the output directory of the class files,
+                             otherwise the root directory of project as
+                             default.
+   -h,--help                 show this help message and exit program
+   -m,--module <module>      the module declared in ToyMake.json you want to
+                             build,
+                             otherwise all the modules will be built.
+   -s,--src <source>         the root directory of your project,
+                             otherwise the workspace directory as default.
+  ```
+  
+  example: 
+  
+  ```shell
+  java -cp build/:compiler/build/libs/compiler-0.0.1-SNAPSHOT.jar xyz.chph.toy.compiler.Compiler -s ToyExamples/ -d build/
+  ```
+  
+  output:
+  
+  ```shell
+  steve@steve-PC:~/$ java -cp build/:compiler/build/libs/compiler-0.0.1-SNAPSHOT.jar xyz.chph.toy.compiler.Compiler -s ToyExamples/ -d build/
+  Importing/Function.toy
+  Importing/Import.toy
+  ClassPathCalls/Library.toy
+  ClassPathCalls/Client.toy
+  ClassPathCalls/TestJava.toy
+  ```
+  
+  and the class files will be created in `./build/`：
+  
+  ```shell
+  steve@steve-PC:~/$ tree build/
+  build/
+  ├── ClassPathCalls
+  │   ├── Client.class
+  │   ├── Library.class
+  │   └── TestJava.class
+  └── Importing
+      ├── Function.class
+      └── Import.class
+  
+  2 directories, 5 files
   ```
   
 - Run
-  `java *.class`
+  `java -cp build/ *.class`, examples:
+  
+  ```shell
+  java -cp build/ Importing.Import
+  ```
 ## Example
 
 - Input(`Fields.toy`)

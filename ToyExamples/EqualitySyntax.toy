@@ -1,3 +1,5 @@
+import {Integer} from java.lang
+
 EqualitySyntax {
   start {
        objectComparisonTest()
@@ -23,8 +25,8 @@ EqualitySyntax {
      assert(expected -> true , actual -> result)
  }
   objectComparisonTest() {
-     var a = new java.lang.Integer(3)
-     var b = new java.lang.Integer(3)
+     var a = new Integer(3)
+     var b = new Integer(3)
        print "Comparing integer " + a.toString() +" and " + b.toString()
       var result = a == b
      assert(expected -> true , actual -> result)
@@ -57,8 +59,8 @@ EqualitySyntax {
         assert(expected -> true , actual -> result)
   }
   objectComparisonTest2() {
-      var a = new java.lang.Integer(3)
-      var b = new java.lang.Integer(4)
+      var a = new Integer(3)
+      var b = new Integer(4)
      print "Comparing integer " + a.toString() +" and " + b.toString()
        var result = a == b
       assert(expected -> false , actual -> result)
