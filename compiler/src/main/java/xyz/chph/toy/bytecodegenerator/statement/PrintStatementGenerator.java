@@ -11,10 +11,12 @@ import org.objectweb.asm.Opcodes;
 public class PrintStatementGenerator {
     private final MethodVisitor methodVisitor;
     private final ExpressionGenerator expressionGenerator;
+
     public PrintStatementGenerator(ExpressionGenerator expressionGenerator, MethodVisitor methodVisitor) {
         this.methodVisitor = methodVisitor;
         this.expressionGenerator = expressionGenerator;
     }
+
     public void generate(PrintStatement printStatement) {
         Expression expression = printStatement.getExpression();
         methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
@@ -23,6 +25,8 @@ public class PrintStatementGenerator {
         String descriptor = "(" + type.getDescriptor() + ")V";
         ClassType owner = new ClassType("java.io.PrintStream");
         String fieldDescriptor = owner.getDescriptor();
-        methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, fieldDescriptor, "println", descriptor, false);
+        // add support for println
+        String methodName = printStatement.getType() == PrintStatement.TYPE_PRINT ? "print" : "println";
+        methodVisitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, fieldDescriptor, methodName, descriptor, false);
     }
 }

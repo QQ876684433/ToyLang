@@ -67,7 +67,10 @@ statement :     block
 
 variableDeclaration : VARIABLE name EQUALS expression ;
 assignment : name EQUALS expression;
-printStatement : PRINT expression ;
+printStatement
+    :   PRINT expression
+    |   PRINTLN expression
+    ;
 returnStatement : 'return' expression #ReturnWithValue
                 | 'return' #ReturnVoid ;
 
@@ -113,6 +116,7 @@ qualifiedName : ID ('.' ID)*;
 //TOKENS
 VARIABLE : 'var' ;
 PRINT : 'print' ;
+PRINTLN : 'println';
 EQUALS : '=' ;
 NUMBER : '-'?[0-9.]+ ;
 BOOL : 'true' | 'false' ;
