@@ -1,0 +1,10 @@
+Test{
+    start {
+        var num1 = 0x12345
+        println num1
+        var num2 = 012345
+        println num2
+        var num3 = 12345
+        println num3
+    }
+}

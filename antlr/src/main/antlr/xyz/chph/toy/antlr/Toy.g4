@@ -42,16 +42,18 @@ parameterWithDefaultValue : type ID '=' defaultValue=expression ;
 type : primitiveType
      | classType ;
 
-primitiveType :  'boolean' ('[' ']')*
-                |   'string' ('[' ']')*
-                |   'char' ('[' ']')*
-                |   'byte' ('[' ']')*
-                |   'short' ('[' ']')*
-                |   'int' ('[' ']')*
-                |   'long' ('[' ']')*
-                |   'float' ('[' ']')*
-                |   'double' ('[' ']')*
-                |   'void' ('[' ']')* ;
+primitiveType
+    :   'boolean' ('[' ']')*
+    |   'string' ('[' ']')*
+    |   'char' ('[' ']')*
+    |   'byte' ('[' ']')*
+    |   'short' ('[' ']')*
+    |   'int' ('[' ']')*
+    |   'long' ('[' ']')*
+    |   'float' ('[' ']')*
+    |   'double' ('[' ']')*
+    |   'void' ('[' ']')*
+    ;
 classType : qualifiedName ('[' ']')* ;
 
 block : '{' statement* '}' ;
@@ -90,7 +92,7 @@ expression : variableReference #VarReference
            | functionName '(' argumentList ')' #FunctionCall
            | superCall='super' '('argumentList ')' #Supercall
            | newCall='new' className '('argumentList ')' #ConstructorCall
-           | value        #ValueExpr
+           | literal        #ValueExpr
            |  '('expression '*' expression')' #Multiply
            | expression '*' expression  #Multiply
            | '(' expression '/' expression ')' #Divide
@@ -108,17 +110,41 @@ expression : variableReference #VarReference
            ;
 
 variableReference : ID ;
-value : NUMBER
-      | BOOL
-      | STRING ;
+
+literal
+    :   integerLiteral
+    |   BOOL
+    |   STRING
+    ;
+
 qualifiedName : ID ('.' ID)*;
 
-//TOKENS
+integerLiteral
+    :   HexLiteral
+    |   OctalLiteral
+    |   DecimalLiteral
+    ;
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                      LEXER
+//////////////////////////////////////////////////////////////////////////////////////
+
+HexLiteral : '0' ('x'|'X') HexDigit+ IntegerTypeSuffix? ;
+
+DecimalLiteral : ('0' | '1'..'9' '0'..'9'*) IntegerTypeSuffix? ;
+
+OctalLiteral : '0' ('0'..'7')+ IntegerTypeSuffix? ;
+
+fragment
+HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
+
+fragment
+IntegerTypeSuffix : ('l'|'L') ;
+
 VARIABLE : 'var' ;
 PRINT : 'print' ;
 PRINTLN : 'println';
 EQUALS : '=' ;
-NUMBER : '-'?[0-9.]+ ;
 BOOL : 'true' | 'false' ;
 STRING : '"'~('\r' | '\n' | '"')*'"' ;
 ID : [a-zA-Z0-9]+ ;

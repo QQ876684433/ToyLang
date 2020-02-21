@@ -38,6 +38,17 @@
         "before": [],
         "after": []
       }
+    },
+    {
+      "module": "IntegerLiteral",
+      "pipeline": [],
+      "others": [
+        "IntegerLiteral/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
     }
   ]
 }

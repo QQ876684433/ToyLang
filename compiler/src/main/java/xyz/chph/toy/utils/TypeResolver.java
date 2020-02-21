@@ -15,30 +15,31 @@ import java.util.Optional;
 public final class TypeResolver {
 
     public static Type getFromTypeContext(ToyParser.TypeContext typeContext) {
-        if(typeContext == null) return BuiltInType.VOID;
+        if (typeContext == null) return BuiltInType.VOID;
         return getFromTypeName(typeContext.getText());
     }
 
 
     public static Type getFromTypeName(String typeName) {
-        if(typeName.equals("String")) return BuiltInType.STRING;
+        if (typeName.equals("String")) return BuiltInType.STRING;
         Optional<? extends Type> builtInType = getBuiltInType(typeName);
-        if(builtInType.isPresent()) return builtInType.get();
+        if (builtInType.isPresent()) return builtInType.get();
         return new ClassType(typeName);
     }
 
-    public static Type getFromValue(ToyParser.ValueContext value) {
-        String stringValue = value.getText();
+    public static Type getFromValue(ToyParser.LiteralContext literal) {
+        String stringValue = literal.getText();
         if (StringUtils.isEmpty(stringValue)) return BuiltInType.VOID;
-        if (value.NUMBER() != null) {
-            if (Ints.tryParse(stringValue) != null) {
-                return BuiltInType.INT;
-            } else if(Floats.tryParse(stringValue) != null) {
-                return BuiltInType.FLOAT;
-            } else if(Doubles.tryParse(stringValue) != null) {
-                return BuiltInType.DOUBLE;
-            }
-        } else if (value.BOOL() != null) {
+        if (literal.integerLiteral() != null) {
+//            if (Ints.tryParse(stringValue) != null) {
+//                return BuiltInType.INT;
+//            } else if(Floats.tryParse(stringValue) != null) {
+//                return BuiltInType.FLOAT;
+//            } else if(Doubles.tryParse(stringValue) != null) {
+//                return BuiltInType.DOUBLE;
+//            }
+            return BuiltInType.INT;
+        } else if (literal.BOOL() != null) {
             return BuiltInType.BOOLEAN;
         }
         return BuiltInType.STRING;
@@ -46,6 +47,14 @@ public final class TypeResolver {
 
     public static Object getValueFromString(String stringValue, Type type) {
         if (TypeChecker.isInt(type)) {
+            if (stringValue.startsWith("0x") || stringValue.startsWith("0X")) {
+                // hexadecimal
+                return Integer.parseInt(stringValue.substring(2), 16);
+            } else if (stringValue.length() > 1 && stringValue.startsWith("0")) {
+                // octal
+                return Integer.parseInt(stringValue, 8);
+            }
+            // decimal
             return Integer.valueOf(stringValue);
         }
         if (TypeChecker.isFloat(type)) {
