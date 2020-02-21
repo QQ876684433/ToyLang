@@ -113,6 +113,7 @@ variableReference : ID ;
 
 literal
     :   integerLiteral
+    |   FloatingPointLiteral
     |   BOOL
     |   STRING
     ;
@@ -128,6 +129,25 @@ integerLiteral
 //////////////////////////////////////////////////////////////////////////////////////
 //                                      LEXER
 //////////////////////////////////////////////////////////////////////////////////////
+
+FloatingPointLiteral
+    :   ('0'..'9')+ '.' ('0'..'9')* Exponent? FloatTypeSuffix?
+    |   '.' ('0'..'9')+ Exponent? FloatTypeSuffix?
+    |   ('0'..'9')+ Exponent FloatTypeSuffix?
+    |   ('0'..'9')+ FloatTypeSuffix
+    |   ('0x' | '0X') (HexDigit )*
+        ('.' (HexDigit)*)?
+        ( 'p' | 'P' )
+        ( '+' | '-' )?
+        ( '0' .. '9' )+
+        FloatTypeSuffix?
+    ;
+
+fragment
+Exponent : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
+
+fragment
+FloatTypeSuffix : ('f'|'F'|'d'|'D') ;
 
 HexLiteral : '0' ('x'|'X') HexDigit+ IntegerTypeSuffix? ;
 

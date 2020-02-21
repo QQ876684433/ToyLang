@@ -49,6 +49,17 @@
         "before": [],
         "after": []
       }
+    },
+    {
+      "module": "FloatingPointLiteral",
+      "pipeline": [],
+      "others": [
+        "FloatingPointLiteral/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
     }
   ]
 }

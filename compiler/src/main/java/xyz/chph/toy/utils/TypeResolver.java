@@ -31,14 +31,13 @@ public final class TypeResolver {
         String stringValue = literal.getText();
         if (StringUtils.isEmpty(stringValue)) return BuiltInType.VOID;
         if (literal.integerLiteral() != null) {
-//            if (Ints.tryParse(stringValue) != null) {
-//                return BuiltInType.INT;
-//            } else if(Floats.tryParse(stringValue) != null) {
-//                return BuiltInType.FLOAT;
-//            } else if(Doubles.tryParse(stringValue) != null) {
-//                return BuiltInType.DOUBLE;
-//            }
             return BuiltInType.INT;
+        } else if (literal.FloatingPointLiteral() != null) {
+            if (Floats.tryParse(stringValue) != null) {
+                return BuiltInType.FLOAT;
+            } else if (Doubles.tryParse(stringValue) != null) {
+                return BuiltInType.DOUBLE;
+            }
         } else if (literal.BOOL() != null) {
             return BuiltInType.BOOLEAN;
         }
