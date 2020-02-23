@@ -1,0 +1,19 @@
+Test {
+    start {
+        var str1 = "hello world"
+        var str2 = "你好，世界！"
+        var str3 = "这是个\"双引号\""
+        var str4 = "1\t2\t3\t4"
+        var str5 = "line1\nline2\nline3"
+        var str6 = "\\jasdi"
+        var str7 = "'a'"
+        println str1
+        println str2
+        println str3
+        println str4
+        println str5
+        println str6
+        println str7
+        println "\b\f\r"
+    }
+}

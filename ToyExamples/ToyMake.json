@@ -60,6 +60,17 @@
         "before": [],
         "after": []
       }
+    },
+    {
+      "module": "UnicodeString",
+      "pipeline": [],
+      "others": [
+        "UnicodeString/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
     }
   ]
 }

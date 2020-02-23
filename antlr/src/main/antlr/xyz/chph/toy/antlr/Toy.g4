@@ -115,7 +115,7 @@ literal
     :   integerLiteral
     |   FloatingPointLiteral
     |   BOOL
-    |   STRING
+    |   StringLiteral
     ;
 
 qualifiedName : ID ('.' ID)*;
@@ -160,6 +160,29 @@ HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
 
 fragment
 IntegerTypeSuffix : ('l'|'L') ;
+
+StringLiteral
+    :  '"' ( EscapeSequence | ~('\\'|'"') )* '"'
+    ;
+
+fragment
+EscapeSequence
+    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
+    |   UnicodeEscape
+    |   OctalEscape
+    ;
+
+fragment
+OctalEscape
+    :   '\\' ('0'..'3') ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7')
+    ;
+
+fragment
+UnicodeEscape
+    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    ;
 
 VARIABLE : 'var' ;
 PRINT : 'print' ;

@@ -10,6 +10,8 @@ import xyz.chph.toy.domain.type.ClassType;
 import xyz.chph.toy.domain.type.Type;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public final class TypeResolver {
@@ -68,6 +70,7 @@ public final class TypeResolver {
         if (type == BuiltInType.STRING) {
             stringValue = StringUtils.removeStart(stringValue, "\"");
             stringValue = StringUtils.removeEnd(stringValue, "\"");
+            stringValue = replaceEscapeChar(stringValue);
             return stringValue;
         }
         throw new AssertionError("Objects not yet implemented!");
@@ -77,5 +80,19 @@ public final class TypeResolver {
         return Arrays.stream(BuiltInType.values())
                 .filter(type -> type.getName().equals(typeName))
                 .findFirst();
+    }
+
+    private static final String[] escapeCharTarget = new String[]{
+            "\\t", "\\n", "\\b", "\\f", "\\r", "\\\"", "\\\\"
+    };
+    private static final String[] escapeCharReplacement = new String[]{
+            "\t", "\n", "\b", "\f", "\r", "\"", "\\"
+    };
+
+    private static String replaceEscapeChar(String stringToReplace) {
+        for (int i = 0; i < escapeCharReplacement.length; i++) {
+            stringToReplace = stringToReplace.replace(escapeCharTarget[i], escapeCharReplacement[i]);
+        }
+        return stringToReplace;
     }
 }
