@@ -19,4 +19,8 @@ public class TypeChecker {
     public static boolean isDouble(Type type) {
         return type == BuiltInType.DOUBLE;
     }
+
+    public static boolean isCharacter(Type type) {
+        return type == BuiltInType.CHAR;
+    }
 }

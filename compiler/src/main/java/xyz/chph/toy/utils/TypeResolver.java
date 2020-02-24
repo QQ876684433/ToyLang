@@ -42,6 +42,8 @@ public final class TypeResolver {
             }
         } else if (literal.BOOL() != null) {
             return BuiltInType.BOOLEAN;
+        } else if (literal.CharacterLiteral() != null) {
+            return BuiltInType.CHAR;
         }
         return BuiltInType.STRING;
     }
@@ -66,6 +68,12 @@ public final class TypeResolver {
         }
         if (TypeChecker.isBool(type)) {
             return Boolean.valueOf(stringValue);
+        }
+        if (TypeChecker.isCharacter(type)) {
+            stringValue = StringUtils.removeStart(stringValue, "'");
+            stringValue = StringUtils.removeEnd(stringValue, "'");
+            stringValue = replaceEscapeChar(stringValue);
+            return stringValue.charAt(0);
         }
         if (type == BuiltInType.STRING) {
             stringValue = StringUtils.removeStart(stringValue, "\"");

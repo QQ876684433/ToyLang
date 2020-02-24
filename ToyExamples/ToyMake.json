@@ -71,6 +71,17 @@
         "before": [],
         "after": []
       }
+    },
+    {
+      "module": "CharacterLiteral",
+      "pipeline": [],
+      "others": [
+        "CharacterLiteral/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
     }
   ]
 }

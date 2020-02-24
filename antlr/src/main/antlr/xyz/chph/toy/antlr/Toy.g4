@@ -116,6 +116,7 @@ literal
     |   FloatingPointLiteral
     |   BOOL
     |   StringLiteral
+    |   CharacterLiteral
     ;
 
 qualifiedName : ID ('.' ID)*;
@@ -163,6 +164,10 @@ IntegerTypeSuffix : ('l'|'L') ;
 
 StringLiteral
     :  '"' ( EscapeSequence | ~('\\'|'"') )* '"'
+    ;
+
+CharacterLiteral
+    :   '\'' ( EscapeSequence | ~('\''|'\\') ) '\''
     ;
 
 fragment
