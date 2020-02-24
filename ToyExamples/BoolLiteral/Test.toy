@@ -1,0 +1,10 @@
+Test {
+    start {
+        println true
+        var bool = false
+        println bool
+        println true==false
+        println true==bool
+        println false==bool
+    }
+}

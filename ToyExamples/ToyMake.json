@@ -26,6 +26,73 @@
         "before": [],
         "after": []
       }
+    },
+    {
+      "module": "Comment",
+      "pipeline": [],
+      "others": [
+        "Comment/SingleLine.toy",
+        "Comment/MultipleLine.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
+    },
+    {
+      "module": "IntegerLiteral",
+      "pipeline": [],
+      "others": [
+        "IntegerLiteral/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
+    },
+    {
+      "module": "FloatingPointLiteral",
+      "pipeline": [],
+      "others": [
+        "FloatingPointLiteral/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
+    },
+    {
+      "module": "UnicodeString",
+      "pipeline": [],
+      "others": [
+        "UnicodeString/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
+    },
+    {
+      "module": "CharacterLiteral",
+      "pipeline": [],
+      "others": [
+        "CharacterLiteral/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
+    },
+    {
+      "module": "BoolLiteral",
+      "pipeline": [],
+      "others": [
+        "BoolLiteral/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
     }
   ]
 }

@@ -10,42 +10,54 @@ import xyz.chph.toy.domain.type.ClassType;
 import xyz.chph.toy.domain.type.Type;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public final class TypeResolver {
 
     public static Type getFromTypeContext(ToyParser.TypeContext typeContext) {
-        if(typeContext == null) return BuiltInType.VOID;
+        if (typeContext == null) return BuiltInType.VOID;
         return getFromTypeName(typeContext.getText());
     }
 
 
     public static Type getFromTypeName(String typeName) {
-        if(typeName.equals("String")) return BuiltInType.STRING;
+        if (typeName.equals("String")) return BuiltInType.STRING;
         Optional<? extends Type> builtInType = getBuiltInType(typeName);
-        if(builtInType.isPresent()) return builtInType.get();
+        if (builtInType.isPresent()) return builtInType.get();
         return new ClassType(typeName);
     }
 
-    public static Type getFromValue(ToyParser.ValueContext value) {
-        String stringValue = value.getText();
+    public static Type getFromValue(ToyParser.LiteralContext literal) {
+        String stringValue = literal.getText();
         if (StringUtils.isEmpty(stringValue)) return BuiltInType.VOID;
-        if (value.NUMBER() != null) {
-            if (Ints.tryParse(stringValue) != null) {
-                return BuiltInType.INT;
-            } else if(Floats.tryParse(stringValue) != null) {
+        if (literal.integerLiteral() != null) {
+            return BuiltInType.INT;
+        } else if (literal.FloatingPointLiteral() != null) {
+            if (Floats.tryParse(stringValue) != null) {
                 return BuiltInType.FLOAT;
-            } else if(Doubles.tryParse(stringValue) != null) {
+            } else if (Doubles.tryParse(stringValue) != null) {
                 return BuiltInType.DOUBLE;
             }
-        } else if (value.BOOL() != null) {
+        } else if (literal.booleanLiteral() != null) {
             return BuiltInType.BOOLEAN;
+        } else if (literal.CharacterLiteral() != null) {
+            return BuiltInType.CHAR;
         }
         return BuiltInType.STRING;
     }
 
     public static Object getValueFromString(String stringValue, Type type) {
         if (TypeChecker.isInt(type)) {
+            if (stringValue.startsWith("0x") || stringValue.startsWith("0X")) {
+                // hexadecimal
+                return Integer.parseInt(stringValue.substring(2), 16);
+            } else if (stringValue.length() > 1 && stringValue.startsWith("0")) {
+                // octal
+                return Integer.parseInt(stringValue, 8);
+            }
+            // decimal
             return Integer.valueOf(stringValue);
         }
         if (TypeChecker.isFloat(type)) {
@@ -57,9 +69,16 @@ public final class TypeResolver {
         if (TypeChecker.isBool(type)) {
             return Boolean.valueOf(stringValue);
         }
+        if (TypeChecker.isCharacter(type)) {
+            stringValue = StringUtils.removeStart(stringValue, "'");
+            stringValue = StringUtils.removeEnd(stringValue, "'");
+            stringValue = replaceEscapeChar(stringValue);
+            return stringValue.charAt(0);
+        }
         if (type == BuiltInType.STRING) {
             stringValue = StringUtils.removeStart(stringValue, "\"");
             stringValue = StringUtils.removeEnd(stringValue, "\"");
+            stringValue = replaceEscapeChar(stringValue);
             return stringValue;
         }
         throw new AssertionError("Objects not yet implemented!");
@@ -69,5 +88,19 @@ public final class TypeResolver {
         return Arrays.stream(BuiltInType.values())
                 .filter(type -> type.getName().equals(typeName))
                 .findFirst();
+    }
+
+    private static final String[] escapeCharTarget = new String[]{
+            "\\t", "\\n", "\\b", "\\f", "\\r", "\\\"", "\\\\"
+    };
+    private static final String[] escapeCharReplacement = new String[]{
+            "\t", "\n", "\b", "\f", "\r", "\"", "\\"
+    };
+
+    private static String replaceEscapeChar(String stringToReplace) {
+        for (int i = 0; i < escapeCharReplacement.length; i++) {
+            stringToReplace = stringToReplace.replace(escapeCharTarget[i], escapeCharReplacement[i]);
+        }
+        return stringToReplace;
     }
 }

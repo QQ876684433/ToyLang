@@ -1,0 +1,11 @@
+Test {
+    start {
+        print 'T'
+        print 'o'
+        println 'y'
+        print '1'
+        print '\t'
+        print '2'
+        print '\n'
+    }
+}

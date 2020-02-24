@@ -1,0 +1,12 @@
+Test{
+    start {
+        var fp1 = 0.2123824739843028f
+        var fp2 = 12.34d
+        var fp3 = 0xab.cdaaaaaaaaaaaaaaaaaaaaaap2f
+        var fp4 = 0xab.cdaaaaaaaaaaaaaaaaaaaaaap2d
+        println fp1
+        println fp2
+        println fp3
+        println fp4
+    }
+}

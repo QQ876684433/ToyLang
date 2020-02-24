@@ -42,16 +42,18 @@ parameterWithDefaultValue : type ID '=' defaultValue=expression ;
 type : primitiveType
      | classType ;
 
-primitiveType :  'boolean' ('[' ']')*
-                |   'string' ('[' ']')*
-                |   'char' ('[' ']')*
-                |   'byte' ('[' ']')*
-                |   'short' ('[' ']')*
-                |   'int' ('[' ']')*
-                |   'long' ('[' ']')*
-                |   'float' ('[' ']')*
-                |   'double' ('[' ']')*
-                |   'void' ('[' ']')* ;
+primitiveType
+    :   'boolean' ('[' ']')*
+    |   'string' ('[' ']')*
+    |   'char' ('[' ']')*
+    |   'byte' ('[' ']')*
+    |   'short' ('[' ']')*
+    |   'int' ('[' ']')*
+    |   'long' ('[' ']')*
+    |   'float' ('[' ']')*
+    |   'double' ('[' ']')*
+    |   'void' ('[' ']')*
+    ;
 classType : qualifiedName ('[' ']')* ;
 
 block : '{' statement* '}' ;
@@ -67,7 +69,10 @@ statement :     block
 
 variableDeclaration : VARIABLE name EQUALS expression ;
 assignment : name EQUALS expression;
-printStatement : PRINT expression ;
+printStatement
+    :   PRINT expression
+    |   PRINTLN expression
+    ;
 returnStatement : 'return' expression #ReturnWithValue
                 | 'return' #ReturnVoid ;
 
@@ -87,7 +92,7 @@ expression : variableReference #VarReference
            | functionName '(' argumentList ')' #FunctionCall
            | superCall='super' '('argumentList ')' #Supercall
            | newCall='new' className '('argumentList ')' #ConstructorCall
-           | value        #ValueExpr
+           | literal        #ValueExpr
            |  '('expression '*' expression')' #Multiply
            | expression '*' expression  #Multiply
            | '(' expression '/' expression ')' #Divide
@@ -105,17 +110,102 @@ expression : variableReference #VarReference
            ;
 
 variableReference : ID ;
-value : NUMBER
-      | BOOL
-      | STRING ;
+
+literal
+    :   integerLiteral
+    |   FloatingPointLiteral
+    |   booleanLiteral
+    |   StringLiteral
+    |   CharacterLiteral
+    ;
+
 qualifiedName : ID ('.' ID)*;
 
-//TOKENS
+integerLiteral
+    :   HexLiteral
+    |   OctalLiteral
+    |   DecimalLiteral
+    ;
+
+booleanLiteral
+    :   'true'
+    |   'false'
+    ;
+
+//////////////////////////////////////////////////////////////////////////////////////
+//                                      LEXER
+//////////////////////////////////////////////////////////////////////////////////////
+
+FloatingPointLiteral
+    :   ('0'..'9')+ '.' ('0'..'9')* Exponent? FloatTypeSuffix?
+    |   '.' ('0'..'9')+ Exponent? FloatTypeSuffix?
+    |   ('0'..'9')+ Exponent FloatTypeSuffix?
+    |   ('0'..'9')+ FloatTypeSuffix
+    |   ('0x' | '0X') (HexDigit )*
+        ('.' (HexDigit)*)?
+        ( 'p' | 'P' )
+        ( '+' | '-' )?
+        ( '0' .. '9' )+
+        FloatTypeSuffix?
+    ;
+
+fragment
+Exponent : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
+
+fragment
+FloatTypeSuffix : ('f'|'F'|'d'|'D') ;
+
+HexLiteral : '0' ('x'|'X') HexDigit+ IntegerTypeSuffix? ;
+
+DecimalLiteral : ('0' | '1'..'9' '0'..'9'*) IntegerTypeSuffix? ;
+
+OctalLiteral : '0' ('0'..'7')+ IntegerTypeSuffix? ;
+
+fragment
+HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
+
+fragment
+IntegerTypeSuffix : ('l'|'L') ;
+
+StringLiteral
+    :  '"' ( EscapeSequence | ~('\\'|'"') )* '"'
+    ;
+
+CharacterLiteral
+    :   '\'' ( EscapeSequence | ~('\''|'\\') ) '\''
+    ;
+
+fragment
+EscapeSequence
+    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
+    |   UnicodeEscape
+    |   OctalEscape
+    ;
+
+fragment
+OctalEscape
+    :   '\\' ('0'..'3') ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7')
+    ;
+
+fragment
+UnicodeEscape
+    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    ;
+
 VARIABLE : 'var' ;
 PRINT : 'print' ;
+PRINTLN : 'println';
 EQUALS : '=' ;
-NUMBER : '-'?[0-9.]+ ;
-BOOL : 'true' | 'false' ;
 STRING : '"'~('\r' | '\n' | '"')*'"' ;
 ID : [a-zA-Z0-9]+ ;
-WS: [ \t\n\r]+ -> skip ;
+COMMENT
+    :   '/*' .*? '*/'    -> channel(HIDDEN) // match anything between /* and */
+    ;
+WS  :   [ \r\t\u000C\n]+ -> channel(HIDDEN)
+    ;
+
+LINE_COMMENT
+    : '//' ~[\r\n]* '\r'? '\n' -> channel(HIDDEN)
+    ;

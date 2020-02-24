@@ -26,8 +26,8 @@ public class ExpressionVisitor extends ToyBaseVisitor<Expression> {
         return variableReferenceExpressionVisitor.visitVarReference(ctx);
     }
     @Override
-    public Expression visitValue(@NotNull ToyParser.ValueContext ctx) {
-        return valueExpressionVisitor.visitValue(ctx);
+    public Expression visitLiteral(@NotNull ToyParser.LiteralContext ctx) {
+        return valueExpressionVisitor.visitLiteral(ctx);
     }
     @Override
     public Expression visitFunctionCall(@NotNull ToyParser.FunctionCallContext ctx) {

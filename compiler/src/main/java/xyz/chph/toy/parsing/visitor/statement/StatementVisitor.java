@@ -66,8 +66,8 @@ public class StatementVisitor extends ToyBaseVisitor<Statement> {
     }
 
     @Override
-    public Expression visitValue(@NotNull ToyParser.ValueContext ctx) {
-        return expressionVisitor.visitValue(ctx);
+    public Expression visitLiteral(@NotNull ToyParser.LiteralContext ctx) {
+        return expressionVisitor.visitLiteral(ctx);
     }
 
     @Override
