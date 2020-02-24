@@ -82,6 +82,17 @@
         "before": [],
         "after": []
       }
+    },
+    {
+      "module": "BoolLiteral",
+      "pipeline": [],
+      "others": [
+        "BoolLiteral/Test.toy"
+      ],
+      "scripts": {
+        "before": [],
+        "after": []
+      }
     }
   ]
 }

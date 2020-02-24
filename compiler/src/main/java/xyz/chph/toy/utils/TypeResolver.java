@@ -40,7 +40,7 @@ public final class TypeResolver {
             } else if (Doubles.tryParse(stringValue) != null) {
                 return BuiltInType.DOUBLE;
             }
-        } else if (literal.BOOL() != null) {
+        } else if (literal.booleanLiteral() != null) {
             return BuiltInType.BOOLEAN;
         } else if (literal.CharacterLiteral() != null) {
             return BuiltInType.CHAR;

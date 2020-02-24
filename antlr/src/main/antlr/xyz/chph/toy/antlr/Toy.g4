@@ -114,7 +114,7 @@ variableReference : ID ;
 literal
     :   integerLiteral
     |   FloatingPointLiteral
-    |   BOOL
+    |   booleanLiteral
     |   StringLiteral
     |   CharacterLiteral
     ;
@@ -125,6 +125,11 @@ integerLiteral
     :   HexLiteral
     |   OctalLiteral
     |   DecimalLiteral
+    ;
+
+booleanLiteral
+    :   'true'
+    |   'false'
     ;
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +198,6 @@ VARIABLE : 'var' ;
 PRINT : 'print' ;
 PRINTLN : 'println';
 EQUALS : '=' ;
-BOOL : 'true' | 'false' ;
 STRING : '"'~('\r' | '\n' | '"')*'"' ;
 ID : [a-zA-Z0-9]+ ;
 COMMENT
